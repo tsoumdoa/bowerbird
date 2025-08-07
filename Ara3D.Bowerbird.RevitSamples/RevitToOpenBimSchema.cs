@@ -437,17 +437,17 @@ public class RevitToOpenBimSchema
 		public void ProcessGrid (EntityIndex ei, Grid g)
 		{
 			var curve = g.Curve;
-			if(curve.IsCurved)
+			if(curve.IsCyclic)
 			{
-				var arc = curve as Auttodesk.Revit.DB.Arc;
-				AddParameter(ei, _gridType, "Curved");
+				var arc = curve as Arc;
+				AddParameter(ei, _gridType, "Arc");
 				AddParameter(ei, _gridCenterPoint, AddPoint(bdb, arc.Center));
 				AddParameter(ei, _gridRadius, arc.Radius);
 			}else{
 				AddParameter(ei, _gridType, "Linear");
 			}
-			AddParameter(ei, _gridStartPoint, AddPoint(bdb, g.GetEndPoint(0)));
-			AddParameter(ei, _gridEndPoint, AddPoint(bdb, g.GetEndPoint(1)));
+			AddParameter(ei, _gridStartPoint, AddPoint(bdb, curve.GetEndPoint(0)));
+			AddParameter(ei, _gridEndPoint, AddPoint(bdb, curve.GetEndPoint(1)));
 		}
 
     public void ProcessMaterials(EntityIndex ei, Element e)
@@ -649,6 +649,9 @@ public class RevitToOpenBimSchema
 
         if (e is Level level)
             ProcessLevel(entityIndex, level);
+
+				if (e is Grid grid)
+					ProcessGrid(entityIndex, grid);
 
         if (e is Family family)
             ProcessFamily(entityIndex, family);
