@@ -86,6 +86,12 @@ public class RevitToOpenBimSchema
     private DescriptorIndex _levelElevation;
     private DescriptorIndex _levelProjectElevation;
 
+		private DescriptorIndex _gridType;
+		private DescriptorIndex _gridStartPoint;
+		private DescriptorIndex _gridEndPoint;
+		private DescriptorIndex _gridCenterPoint;
+		private DescriptorIndex _gridRadius;
+
     private DescriptorIndex _materialColorRed;
     private DescriptorIndex _materialColorGreen;
     private DescriptorIndex _materialColorBlue;
@@ -174,6 +180,12 @@ public class RevitToOpenBimSchema
 
         AddDesc(ref _levelProjectElevation, "rvt:Level:ProjectElevation", ParameterType.Double);
         AddDesc(ref _levelElevation, "rvt:Level:Elevation", ParameterType.Double);
+
+				AddDesc(ref _gridType, "rvt:Grid:Type", ParameterType.String);
+				AddDesc(ref _gridStartPoint, "rvt:Grid:StartPoint", ParameterType.Point);
+				AddDesc(ref _gridEndPoint, "rvt:Grid:EndPoint", ParameterType.Point);
+				AddDesc(ref _gridCenterPoint, "rvt:Grid:CenterPoint", ParameterType.Point);
+				AddDesc(ref _gridRadius, "rvt:Grid:Radius", ParameterType.Double);
 
         AddDesc(ref _materialColorRed, "rvt:Material:Color.Red", ParameterType.Double);
         AddDesc(ref _materialColorGreen, "rvt:Material:Color.Green", ParameterType.Double);
@@ -421,6 +433,22 @@ public class RevitToOpenBimSchema
         AddParameter(ei, _levelElevation, level.Elevation);
         AddParameter(ei, _levelProjectElevation, level.ProjectElevation);
     }
+
+		public void ProcessGrid (EntityIndex ei, Grid g)
+		{
+			var curve = g.Curve;
+			if(curve.IsCurved)
+			{
+				var arc = curve as Auttodesk.Revit.DB.Arc;
+				AddParameter(ei, _gridType, "Curved");
+				AddParameter(ei, _gridCenterPoint, AddPoint(bdb, arc.Center));
+				AddParameter(ei, _gridRadius, arc.Radius);
+			}else{
+				AddParameter(ei, _gridType, "Linear");
+			}
+			AddParameter(ei, _gridStartPoint, AddPoint(bdb, g.GetEndPoint(0)));
+			AddParameter(ei, _gridEndPoint, AddPoint(bdb, g.GetEndPoint(1)));
+		}
 
     public void ProcessMaterials(EntityIndex ei, Element e)
     {
