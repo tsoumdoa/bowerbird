@@ -650,8 +650,8 @@ public class RevitToOpenBimSchema
         if (e is Level level)
             ProcessLevel(entityIndex, level);
 
-				if (e is Grid grid)
-					ProcessGrid(entityIndex, grid);
+		if (e is Grid grid)
+			ProcessGrid(entityIndex, grid);
 
         if (e is Family family)
             ProcessFamily(entityIndex, family);
